@@ -1,2 +1,3 @@
-# EngieCompass
-https://rainmakinginnovation.github.io/EngieCompass
+# LATAMFintechCompass
+
+https://rainmakinginnovation.github.io/LATAMFintechCompass/
