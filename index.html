@@ -2570,17 +2570,10 @@
                 }
 
                 })
-                .style("visibility", function() {
-                  if (e.target._zoom <= 3) {
-                    return "visible"
-                  } else {
-                    return "hidden"
-                  }
-                })
                 .attr("fill", "#7DCCFF")
                 .attr("stroke", "#7DCCFF");
 
-                 mapG.selectAll(".city-circle")
+                 /*mapG.selectAll(".city-circle")
                   .attr("cx", function(d, i) {
                   return map.latLngToLayerPoint(new L.LatLng(d.cityLat, d.cityLng)).x
                 })
@@ -2595,7 +2588,7 @@
                   }
                 })
                 .attr("fill", "#7DCCFF")
-                .attr("stroke", "#7DCCFF");
+                .attr("stroke", "#7DCCFF");*/
               }
 
             map.on("zoom", function(e) {
