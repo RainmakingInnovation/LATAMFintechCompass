@@ -80,15 +80,18 @@
         stroke-width: 2px;
       }
 
-      .mature-segments {
+      .growth-and-expansion-segments,
+      .launched-segments {
         fill: #f4f4f4;
       }
 
-      .emerging-segments {
+      .ready-to-scale-segments,
+      .beta-version-ready-for-commercial-release-segments {
         fill: #e9e9e9;
       }
 
-      .nascent-segments {
+      .demo-prototype-segments, 
+      .concept-idea-segments {
         fill: #dfdfdf;
       }
 
@@ -485,7 +488,7 @@
       }
 
       #button-16 .knobs:before {
-        content: "Maturity";
+        content: "Year";
         position: absolute;
         top: 4px;
         left: 4px;
@@ -545,7 +548,7 @@
       }
 
       #button-16 .checkbox:checked + .knobs:before {
-        content: "Year";
+        content: "Maturity";
         left: 56px;
         background-color: #ea3b66;
       }
@@ -1596,7 +1599,7 @@
 
 
               spinner.stop();
-              //d3.select("#button-16").style("display", "block")
+              d3.select("#button-16").style("display", "block")
               //d3.select("#button-17").style("display", "block")
               //d3.select(".dropdown-client").style("display", "inline-block")
               d3.select("#save-button").style("display", "block")
@@ -2126,7 +2129,7 @@
                           .append("circle")
                           .attr("class", "nodes")
                           .attr("r", function(d) {
-                            if (d["Funding Stage"] !== "Acquired") {
+                            if (d["RMI Terminology Funding Round"] !== "Acquired") {
                               return nodeRadius;
                             }
                           })
@@ -2135,7 +2138,7 @@
                           })
                           .attr("fill", function(d) {
                             return nodeColorScale(
-                              fundingCategoryScale(d["Funding Stage"])
+                              fundingCategoryScale(d["RMI Terminology Funding Round"])
                             );
                           })
                           .attr("cx", function(d) {
@@ -2180,14 +2183,14 @@
                             return d.opacity;
                           })
                           .attr("width", function(d) {
-                            if (d["Funding Stage"] === "Acquired") {
+                            if (d["RMI Terminology Funding Round"] === "Acquired") {
                               return nodeOtherWidth
                             } else {
                               return 0;
                             }
                           })
                           .attr("height", function(d) {
-                            if (d["Funding Stage"] === "Acquired") {
+                            if (d["RMI Terminology Funding Round"] === "Acquired") {
                               return nodeOtherWidth
                             } else {
                               return 0;
@@ -2287,7 +2290,7 @@
                                         hs_location += v["Country"]
 
                                         var hs_round = "<span style='font-family: Graphik Bold'>Funding Round:<\/span> "
-                                            hs_round += v["Funding Stage"]
+                                            hs_round += v["RMI Terminology Funding Round"]
     
                                         var hs_amount = "<span style='font-family: Graphik Bold'>Funding Amount:<\/span> "
                                             hs_amount += v["Total funding (US$)"]
@@ -2738,25 +2741,17 @@
   
             // need to fix.
             var fundingCategoryDomain = [
-              "Undisclosed",
+              "Pre-Seed",
               "Seed",
-              "Series A",
-              "Series B",
-              "Series C",
-              "Series D",
-              "Series E",
-              "Public"
+              "Venture Capital / CVC",
+              "No Funding Received / No Hemos Recibido Fondos"
             ];
   
             var fundingCategoryRange = [
-              "Undisclosed",
+              "Pre-Seed",
               "Seed",
-              "Series A+",
-              "Series A+",
-              "Series A+",
-              "Series A+",
-              "Series A+",
-              "Series A+"
+              "Venture Capital / CVC",
+              "No Funding Received"
             ];
   
             var fundingCategoryRangeUnique = [...new Set(fundingCategoryRange)];
@@ -2766,7 +2761,7 @@
               .domain(fundingCategoryDomain)
               .range(fundingCategoryRange);
   
-            var colors = ["#D75059", "#01AAFF", "#388659"];
+            var colors = ["#D75059", "#01AAFF", "#388659", "#FFFD82"];
   
             var nodeColorScale = d3
               .scaleOrdinal()
@@ -2852,7 +2847,7 @@
             var count_by_funding_stage = d3
               .nest()
               .key(function(d) {
-                return d["Funding Stage"];
+                return d["RMI Terminology Funding Round"];
               })
               .rollup(function(v) {
                 return v.length;
@@ -2914,30 +2909,48 @@
               } */
   
             var maturity_list = [
-              { name: "Nascent", inner: 50, outer: 180 },
-              { name: "Emerging", inner: 180, outer: 240 },
-              { name: "Mature", inner: 240, outer: 300 }
+              { name: "Growth and Expansion", inner: 50, outer: 100 },
+              { name: "Launched", inner: 100, outer: 140 },
+              { name: "Ready to Scale", inner: 140, outer: 180 },
+              { name: "Beta Version ready for Commercial Release", inner: 180, outer: 220 },
+              { name: "Demo/Prototype", inner: 220, outer: 260 },
+              { name: "Concept/Idea", inner: 260, outer: 300 }
             ];
   
             var backgroundArc = d3
               .arc()
               .innerRadius(maturity_list[0].inner)
-              .outerRadius(maturity_list[2].outer);
+              .outerRadius(maturity_list[maturity_list.length-1].outer);
   
-            var nascentArc = d3
+            var growthandexpansionArc = d3
               .arc()
               .innerRadius(maturity_list[0].inner)
               .outerRadius(maturity_list[0].outer);
-  
-            var emergingArc = d3
+
+            var launchedArc = d3
               .arc()
               .innerRadius(maturity_list[1].inner)
               .outerRadius(maturity_list[1].outer);
   
-            var matureArc = d3
+            var readytoscaleArc = d3
               .arc()
               .innerRadius(maturity_list[2].inner)
               .outerRadius(maturity_list[2].outer);
+
+            var betaversionreadyforcommercialreleaseArc = d3
+              .arc()
+              .innerRadius(maturity_list[3].inner)
+              .outerRadius(maturity_list[3].outer);
+  
+            var demoprototypeArc = d3
+              .arc()
+              .innerRadius(maturity_list[4].inner)
+              .outerRadius(maturity_list[4].outer);
+
+            var conceptideaArc = d3
+              .arc()
+              .innerRadius(maturity_list[5].inner)
+              .outerRadius(maturity_list[5].outer);
   
             var themeArc = d3
               .arc()
@@ -3116,12 +3129,12 @@
                 .data(chartPieData)
                 .enter()
                 .append("path")
-                .attr("class", "segment " + v.name.toLowerCase() + "-segments")
+                .attr("class", "segment " + v.name.toLowerCase().replace(/\//g, "-").replace(/ /g, "-")  + "-segments")
                 .attr("id", function(d) {
                   return (
-                    v.name.toLowerCase() +
+                    v.name.toLowerCase().replace(/\//g, "-").replace(/ /g, "-")  +
                     "-" +
-                    d.data.value.key.replace(/ /g, "-").replace(/&/g, "and") +
+                    d.data.value.key.replace(/ /g, "-").replace(/&/g, "and").replace(/,/g,"") +
                     "-segment"
                   );
                 })
@@ -3146,7 +3159,7 @@
                     "year-" +
                     v.key +
                     "-" +
-                    d.data.value.key.replace(/ /g, "-").replace(/&/g, "and") +
+                    d.data.value.key.replace(/ /g, "-").replace(/&/g, "and").replace(/,/g,"") +
                     "-segment"
                   );
                 })
@@ -3423,7 +3436,7 @@
                 return "translate(" + horz + "," + vert + ")";
               });
   
-            var keyAcquired = keySVG
+            /*var keyAcquired = keySVG
               .append("g")
               .attr("transform", "translate(-45,-30)");
   
@@ -3468,7 +3481,7 @@
                   filterKey = "acquired";
                   updateNodes("key", filterKey);
                 }
-              });
+              });*/
   
             keyOther
               .append("circle")
@@ -3649,61 +3662,168 @@
                 .text("Maturity")
                 .attr("fill", "white"); */
   
-            var nascentLabelRadius = maturity_list[0].outer - 15;
-            var emergingLabelRadius = maturity_list[1].outer - 15;
-            var matureLabelRadius = maturity_list[2].outer - 15;
+            var growthandexpansionRadius = maturity_list[0].outer - 15;
+            var launchedRadius = maturity_list[1].outer - 15;
+            var readytoscaleRadius = maturity_list[2].outer - 15;
+            var betaversionreadyforcommercialreleaseRadius = maturity_list[3].outer - 15;
+            var demoprototypeRadius = maturity_list[4].outer - 15;
+            var conceptideaRadius = maturity_list[5].outer - 15;
   
-            var nascentLabel = chartSVG
+            var growthandexpansionLabel = chartSVG
               .append("g")
               .classed("maturity-labels", true);
   
-            nascentLabel
+            growthandexpansionLabel
               .append("def")
               .append("path")
-              .attr("id", "nascent-label-path")
+              .attr("id", "growth-and-expansion-label-path")
               .attr(
                 "d",
                 "m " +
-                  -nascentLabelRadius +
+                  -growthandexpansionRadius +
                   " 0 a 50 50 0 1 1 " +
-                  2 * nascentLabelRadius +
+                  2 * growthandexpansionRadius +
                   " 0"
               );
   
-            nascentLabel
+            growthandexpansionLabel
               .append("text")
               .attr("class", "maturity-label-text")
-              .attr("id", "nascent-label-path-text")
+              .attr("id", "growth-and-expansion-label-path-text")
               .append("textPath")
-              .attr("xlink:href", "#nascent-label-path")
+              .attr("xlink:href", "#growth-and-expansion-label-path")
               .attr("startOffset", "50%")
-              .text("Nascent");
-  
-            var emergingLabel = chartSVG
+              .text("Growth and Expansion");
+
+            var launchedLabel = chartSVG
               .append("g")
               .classed("maturity-labels", true);
   
-            emergingLabel
+            launchedLabel
               .append("def")
               .append("path")
-              .attr("id", "emerging-label-path")
+              .attr("id", "launched-label-path")
               .attr(
                 "d",
                 "m " +
-                  -emergingLabelRadius +
+                  -launchedRadius +
                   " 0 a 50 50 0 1 1 " +
-                  2 * emergingLabelRadius +
+                  2 * launchedRadius +
                   " 0"
               );
   
-            emergingLabel
+            launchedLabel
               .append("text")
               .attr("class", "maturity-label-text")
-              .attr("id", "emerging-label-path-text")
+              .attr("id", "launched-label-path-text")
               .append("textPath")
-              .attr("xlink:href", "#emerging-label-path")
+              .attr("xlink:href", "#launched-label-path")
               .attr("startOffset", "50%")
-              .text("Emerging");
+              .text("Launched");
+  
+            var readytoscaleLabel = chartSVG
+              .append("g")
+              .classed("maturity-labels", true);
+  
+            readytoscaleLabel
+              .append("def")
+              .append("path")
+              .attr("id", "ready-to-scale-label-path")
+              .attr(
+                "d",
+                "m " +
+                  -readytoscaleRadius +
+                  " 0 a 50 50 0 1 1 " +
+                  2 * readytoscaleRadius +
+                  " 0"
+              );
+  
+            readytoscaleLabel
+              .append("text")
+              .attr("class", "maturity-label-text")
+              .attr("id", "ready-to-scale-label-path-text")
+              .append("textPath")
+              .attr("xlink:href", "#ready-to-scale-label-path")
+              .attr("startOffset", "50%")
+              .text("Ready to Scale");
+
+            var betaversionreadyforcommercialreleaseLabel = chartSVG
+              .append("g")
+              .classed("maturity-labels", true);
+  
+            betaversionreadyforcommercialreleaseLabel
+              .append("def")
+              .append("path")
+              .attr("id", "beta-version-ready-for-commercial-release-label-path")
+              .attr(
+                "d",
+                "m " +
+                  -betaversionreadyforcommercialreleaseRadius +
+                  " 0 a 50 50 0 1 1 " +
+                  2 * betaversionreadyforcommercialreleaseRadius +
+                  " 0"
+              );
+  
+            betaversionreadyforcommercialreleaseLabel
+              .append("text")
+              .attr("class", "maturity-label-text")
+              .attr("id", "beta-version-ready-for-commercial-release-label-path-text")
+              .append("textPath")
+              .attr("xlink:href", "#beta-version-ready-for-commercial-release-label-path")
+              .attr("startOffset", "50%")
+              .text("Beta Version ready for Commercial Release");
+
+            var demoprototypeLabel = chartSVG
+              .append("g")
+              .classed("maturity-labels", true);
+  
+            demoprototypeLabel
+              .append("def")
+              .append("path")
+              .attr("id", "demo-prototype-label-path")
+              .attr(
+                "d",
+                "m " +
+                  -demoprototypeRadius +
+                  " 0 a 50 50 0 1 1 " +
+                  2 * demoprototypeRadius +
+                  " 0"
+              );
+  
+            demoprototypeLabel
+              .append("text")
+              .attr("class", "maturity-label-text")
+              .attr("id", "demo-prototype-label-path-text")
+              .append("textPath")
+              .attr("xlink:href", "#demo-prototype-label-path")
+              .attr("startOffset", "50%")
+              .text("Demo/Prototype");
+
+              var conceptideaLabel = chartSVG
+              .append("g")
+              .classed("maturity-labels", true);
+  
+            conceptideaLabel
+              .append("def")
+              .append("path")
+              .attr("id", "concept-idea-label-path")
+              .attr(
+                "d",
+                "m " +
+                  -conceptideaRadius +
+                  " 0 a 50 50 0 1 1 " +
+                  2 * conceptideaRadius +
+                  " 0"
+              );
+  
+            conceptideaLabel
+              .append("text")
+              .attr("class", "maturity-label-text")
+              .attr("id", "concept-idea-label-path-text")
+              .append("textPath")
+              .attr("xlink:href", "#concept-idea-label-path")
+              .attr("startOffset", "50%")
+              .text("Concept/Idea");
   
             count_by_year.forEach(function(d, i) {
               this["year" + d.key + "LabelRadius"] = d.outer - 10;
@@ -3736,40 +3856,18 @@
                     .text(d.key);
             });
   
-            var matureLabel = chartSVG
-              .append("g")
-              .classed("maturity-labels", true);
-  
-            matureLabel
-              .append("def")
-              .append("path")
-              .attr("id", "mature-label-path")
-              .attr(
-                "d",
-                "m " +
-                  -matureLabelRadius +
-                  " 0 a 50 50 0 1 1 " +
-                  2 * matureLabelRadius +
-                  " 0"
-              );
-  
-            matureLabel
-              .append("text")
-              .attr("class", "maturity-label-text")
-              .attr("id", "mature-label-path-text")
-              .append("textPath")
-              .attr("xlink:href", "#mature-label-path")
-              .attr("startOffset", "50%")
-              .text("Mature");
   
             maturity_list_elements = [
-              { name: "Nascent", fn: nascentLabel },
-              { name: "Emerging", fn: emergingLabel },
-              { name: "Mature", fn: matureLabel }
+              { name: "Growth and Expansion", fn: growthandexpansionLabel },
+              { name: "Launched", fn: launchedLabel },
+              { name: "Ready to Scale", fn: readytoscaleLabel },
+              { name: "Beta Version ready for Commercial Release", fn: betaversionreadyforcommercialreleaseLabel },
+              { name: "Demo/Prototype", fn: demoprototypeLabel },
+              { name: "Concept/Idea", fn: conceptideaLabel }
             ];
   
             maturity_list.forEach(function(d) {
-              var id = "#" + d.name.toLowerCase() + "-label-path-text";
+              var id = "#" + d.name.toLowerCase().replace(/\//g, "-").replace(/ /g, "-") + "-label-path-text";
               d3.select(id).remove();
             });
   
@@ -3791,7 +3889,7 @@
               return d["Opportunity Space"];
             })
             .key(function(d) {
-              return d["Maturity"];
+              return d["Maturity (Existing, Emerging, Distant)"];
             })
             .rollup(function(v) {
               return v.length;
@@ -3851,7 +3949,8 @@
                   }
                 }
                 for (i = 0; i < maturity_list.length; i++) {
-                  if (d["Maturity"] === maturity_list[i]["name"]) {
+                  if (d["Maturity (Existing, Emerging, Distant)"] === maturity_list[i]["name"]) {
+                    
                     tmp_innerRadiusMin = maturity_list[i]["inner"]
                     tmp_outerRadiusMax = maturity_list[i]["outer"]
                     break;
@@ -3861,7 +3960,7 @@
                 for (i = 0; i < nodeData.length; i++) {
                   if (nodeData[i].key === d["Opportunity Space"]) {
                     for (j = 0; j < nodeData[i].values.length; j++) {
-                      if (nodeData[i].values[j].key === d["Maturity"]) {
+                      if (nodeData[i].values[j].key === d["Maturity (Existing, Emerging, Distant)"]) {
 
                         var congestion = calcCongestion(
                           tmp_startAngleMin,
@@ -3890,7 +3989,7 @@
                             tmp_outerRadiusMax,
                             nodeData[i].values[j]
                           )
-                          indexTracker[d["Opportunity Space"]][d["Maturity"]]["slot"] += 1
+                          indexTracker[d["Opportunity Space"]][d["Maturity (Existing, Emerging, Distant)"]]["slot"] += 1
                         }
 
 
@@ -4073,7 +4172,7 @@
               .attr("class", "nodes")
               .attr("r", function(d) {
                 if (
-                    d["Funding Stage"] !== "Acquired"
+                    d["RMI Terminology Funding Round"] !== "Acquired"
                 ) {
                   return nodeRadius;
                 }
@@ -4086,7 +4185,7 @@
               })
               .attr("fill", function(d) {
                 return nodeColorScale(
-                    fundingCategoryScale(d["Funding Stage"])
+                    fundingCategoryScale(d["RMI Terminology Funding Round"])
                   );
               })
               .on("mouseover", function(d) {
@@ -4139,14 +4238,14 @@
                 return d["Startup"].toLowerCase().replace(/ /g, "-");
               })
               .attr("width", function(d) {
-                if (d["Funding Stage"] === "Acquired") {
+                if (d["RMI Terminology Funding Round"] === "Acquired") {
                   return nodeOtherWidth
                 } else {
                   return 0;
                 }
               })
               .attr("height", function(d) {
-                if (d["Funding Stage"] === "Acquired") {
+                if (d["RMI Terminology Funding Round"] === "Acquired") {
                   return nodeOtherWidth
                 } else {
                   return 0;
@@ -4194,21 +4293,21 @@
   
               if (filterKey === "acquired") {
                 nodes.attr("opacity", function(d) {
-                  if (d["Funding Stage"] !== "Acquired") {
+                  if (d["RMI Terminology Funding Round"] !== "Acquired") {
                     d.opacity = 0.3;
                   }
                   return d.opacity;
                 });
   
                 nodes_acquired.attr("opacity", function(d) {
-                  if (d["Funding Stage"] === "Acquired") {
+                  if (d["RMI Terminology Funding Round"] === "Acquired") {
                     d.opacity = 1;
                   }
                   return d.opacity;
                 });
   
                 nodes_activity.attr("opacity", function(d) {
-                  if (d["Funding Stage"] !== "Acquired") {
+                  if (d["RMI Terminology Funding Round"] !== "Acquired") {
                     d.opacity = 0.3;
                   }
                   return d.opacity;
@@ -4225,7 +4324,7 @@
                 nodes.attr("opacity", function(d) {
                   if (
                     d["Activity/Acquisition Time"] != "" &&
-                    d["Funding Stage"] !== "Acquired"
+                    d["RMI Terminology Funding Round"] !== "Acquired"
                   ) {
                     d.opacity = 1;
                   } else {
@@ -4265,7 +4364,7 @@
               ) {
                 
                 nodes.attr("opacity", function(v) {
-                  if (fundingCategoryScale(v["Funding Stage"]) === filterKey) {
+                  if (fundingCategoryScale(v["RMI Terminology Funding Round"]) === filterKey) {
                     v.opacity = 1;
                   } else {
                     v.opacity = 0.3;
@@ -4274,7 +4373,7 @@
                 });
   
                 nodes_acquired.attr("opacity", function(d) {
-                  if (d["Funding Stage"] === "Acquired") {
+                  if (d["RMI Terminology Funding Round"] === "Acquired") {
                     d.opacity = 0.3;
                   }
                   return d.opacity;
@@ -4596,7 +4695,7 @@
                   var startR = d3.select(this).attr("r");
                   if (
                     (d["Client Served"] === type || type === "All Startups") &&
-                    d["Funding Stage"] !== "Acquired" &&
+                    d["RMI Terminology Funding Round"] !== "Acquired" &&
                     d.hide === false &&
                     (d["Global"] === geotype || geotype === "All Startups")
                   ) {
@@ -4653,7 +4752,7 @@
                   var startWidth = d3.select(this).attr("width");
                   if (
                     (d["Client Served"] === type || type === "All Startups") &&
-                    d["Funding Stage"] === "Acquired" &&
+                    d["RMI Terminology Funding Round"] === "Acquired" &&
                     d.hide === false &&
                     (d["Global"] === geotype || geotype === "All Startups")
                   ) {
@@ -4670,7 +4769,7 @@
                   var startHeight = d3.select(this).attr("height");
                   if (
                     (d["Client Served"] === type || type === "All Startups") &&
-                    d["Funding Stage"] === "Acquired" &&
+                    d["RMI Terminology Funding Round"] === "Acquired" &&
                     d.hide === false &&
                     (d["Global"] === geotype || geotype === "All Startups")
                   ) {
@@ -4687,7 +4786,7 @@
                   var startY = d3.select(this).attr("y");
                   if (
                     (d["Client Served"] === type || type === "All Startups") &&
-                    d["Funding Stage"] === "Acquired" &&
+                    d["RMI Terminology Funding Round"] === "Acquired" &&
                     d.hide === false &&
                     (d["Global"] === geotype || geotype === "All Startups")
                   ) {
@@ -5049,14 +5148,14 @@
 
                   var maturity_data = d3.nest()
                   .key(function(d) {
-                    return d["Maturity"]
+                    return d["Maturity (Existing, Emerging, Distant)"]
                   })
                   .rollup(function(v) {
                     return {startups: v.length}
                   })
                   .sortKeys(maturitySort)
                   .entries(bar_data.filter(function(d) {
-                    return d.Maturity != ""
+                    return d["Maturity (Existing, Emerging, Distant)"] != ""
                   }) )
 
                   
@@ -5177,7 +5276,8 @@
                   });
   
                 maturity_list.forEach(function(d) {
-                  var id = "#" + d.name.toLowerCase() + "-label-path-text";
+                  var id = "#" + d.name.toLowerCase().replace(/\//g,"-").replace(/ /g,"-") + "-label-path-text";
+                  
                   d3.select(id).remove();
                 });
   
@@ -5196,7 +5296,7 @@
                       "#year-" +
                         d.key +
                         "-" +
-                        v.data.value.key.replace(/ /g, "-").replace(/&/g, "and") +
+                        v.data.value.key.replace(/ /g, "-").replace(/&/g, "and").replace(/,/g,"") +
                         "-segment"
                     ).attr("opacity", 1);
                   });
@@ -5259,7 +5359,7 @@
                       "#year-" +
                         d.key +
                         "-" +
-                        v.data.value.key.replace(/ /g, "-").replace(/&/g, "and") +
+                        v.data.value.key.replace(/ /g, "-").replace(/&/g, "and").replace(/,/g,"") +
                         "-segment"
                     ).attr("opacity", 0);
                   });
@@ -5269,11 +5369,11 @@
                   d.fn
                     .append("text")
                     .attr("class", "maturity-label-text")
-                    .attr("id", d.name.toLowerCase() + "-label-path-text")
+                    .attr("id", d.name.toLowerCase().replace(/\//g,"-").replace(/ /g,"-") + "-label-path-text")
                     .append("textPath")
                     .attr(
                       "xlink:href",
-                      "#" + d.name.toLowerCase() + "-label-path"
+                      "#" + d.name.toLowerCase().replace(/\//g,"-").replace(/ /g,"-").replace(/,/g,"") + "-label-path"
                     )
                     .attr("startOffset", "50%")
                     .text(d.name);
@@ -5549,7 +5649,7 @@
                 } */
               if (type === "color") {
                 nodes.attr("opacity", function(d) {
-                  if (fundingCategoryScale(d["Funding Stage"]) === data) {
+                  if (fundingCategoryScale(d["RMI Terminology Funding Round"]) === data) {
                     return 1;
                   } else {
                     return 0.3;
@@ -5680,7 +5780,7 @@
             function showNodeTooltip(d) {              
               const fundingList = ["Unfunded"]
               let fundingVal = 0
-              if (fundingList.indexOf(d["Funding Stage"]) < 0) {
+              if (fundingList.indexOf(d["RMI Terminology Funding Round"]) < 0) {
                 if (d["Total funding (US$)"] == 0) {
                   fundingVal = "Undisclosed"
                 } else {
@@ -5714,13 +5814,13 @@
               }
 
               nodes.attr("opacity", function(v) {
-                if (v["Funding Stage"] === d["Funding Stage"]) {
+                if (v["RMI Terminology Funding Round"] === d["RMI Terminology Funding Round"]) {
                   return 1;
                 } else {
                   return 0.3;
                 }
               });
-              if (d["Funding Stage"] === "Acquired") {
+              if (d["RMI Terminology Funding Round"] === "Acquired") {
                 nodes_acquired.attr("opacity", 1);
               } else {
                 nodes_acquired.attr("opacity", 0.3);
@@ -5842,13 +5942,13 @@
                 });
   
               nodes.attr("opacity", function(d) {
-                if (d["Funding Stage"] === data["Funding Stage"]) {
+                if (d["RMI Terminology Funding Round"] === data["RMI Terminology Funding Round"]) {
                   return 1;
                 } else {
                   return 0.3;
                 }
               });
-              if (data["Funding Stage"] === "Acquired") {
+              if (data["RMI Terminology Funding Round"] === "Acquired") {
                 nodes_acquired.attr("opacity", 1);
               } else {
                 nodes_acquired.attr("opacity", 0.3);
@@ -6126,7 +6226,7 @@
                     .append("circle")
                     .attr("class", "nodes")
                     .attr("r", function(d) {
-                      if (d["Funding Stage"] !== "Acquired") {
+                      if (d["RMI Terminology Funding Round"] !== "Acquired") {
                         return nodeRadius;
                       }
                     })
@@ -6135,7 +6235,7 @@
                     })
                     .attr("fill", function(d) {
                       return nodeColorScale(
-                        fundingCategoryScale(d["Funding Stage"])
+                        fundingCategoryScale(d["RMI Terminology Funding Round"])
                       );
                     })
                     .attr("cx", function(d) {
@@ -6175,14 +6275,14 @@
                       return d.opacity;
                     })
                     .attr("width", function(d) {
-                      if (d["Funding Stage"] === "Acquired") {
+                      if (d["RMI Terminology Funding Round"] === "Acquired") {
                         return nodeOtherWidth
                       } else {
                         return 0;
                       }
                     })
                     .attr("height", function(d) {
-                      if (d["Funding Stage"] === "Acquired") {
+                      if (d["RMI Terminology Funding Round"] === "Acquired") {
                         return nodeOtherWidth
                       } else {
                         return 0;
@@ -6629,7 +6729,7 @@
             loop1:
             for (let hi = 0; hi <= horizontalCuts; hi++) {
               index ++
-            if (index === indexTracker[data["Opportunity Space"]][data["Maturity"]]["slot"]) {
+            if (index === indexTracker[data["Opportunity Space"]][data["Maturity (Existing, Emerging, Distant)"]]["slot"]) {
               horizontalSlot = hi
               verticalSlot = vi
               break loop0
@@ -6693,7 +6793,7 @@
                 Math.pow(nodeList[l][0] - tmp_x, 2) +
                   Math.pow(nodeList[l][1] - tmp_y, 2)
               );
-              if (distance <= 5) {
+              if (distance <= 2) {
                 distanceCheck = 1;
               }
             }
